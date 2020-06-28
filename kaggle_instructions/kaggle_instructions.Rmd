@@ -1,0 +1,229 @@
+---
+title: "Creating a kaggle-in-class challenge"
+author: "Di Cook, Monash EBS"
+output: 
+    learnr::tutorial:
+        progressive: true
+        allow_skip: true
+        css: "css/styles.css"
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE, 
+  warning = FALSE,
+  error = FALSE)
+```
+
+Image: [kowari](https://upload.wikimedia.org/wikipedia/commons/a/ac/Vakorejsek_ctyrprsty.jpg)
+
+## Why?
+
+Kaggle-in-class provides an objective way for students to assess their learning of predictive modeling. 
+
+Examples from recent years:
+
+- 2020: [Pictionary](https://www.kaggle.com/c/pictionary/leaderboard)
+- 2019: [How Points End in Tennis](https://www.kaggle.com/c/monba2019)
+- 2017: [Melbourne auction prices](https://www.kaggle.com/c/vitticeps/leaderboard)
+- 2017: [Spam or Ham](https://www.kaggle.com/c/spam-or-not-spam/leaderboard)
+- 2016: [Ames housing prices](https://www.kaggle.com/c/galah/leaderboard)
+- 2016: [Who's speaking](https://www.kaggle.com/c/cockatoo/leaderboard)
+- 2015: [Happy paintings](https://www.kaggle.com/c/monba/leaderboard)
+
+## Getting data ready
+
+### Choosing data
+
+- the full set is not available to the students, to avoid plagiarism and use of unauthorized assistance.
+- the data is not too easy, or too hard, to model so that there is some discriminatory power in the results.
+- data should be relatively clean, to the point where the instructor has tested that a model can be fitted.
+- contains some challenges, that make standard off-the-shelf modeling less successful, like different variable types that need processing or transforming, some outliers, large number of variables.
+- if it is a classification challenge, it will work better with relatively balanced classes, because the overall accuracy is the easiest metric to use.
+
+### Let's get wildlife sightings around Monash
+
+I've pulled the occurrence records from https://www.ala.org.au. 
+
+```{r  eval=FALSE}
+monash <- read_csv("monash/monash.csv")
+counts <- monash %>% count(`Vernacular name`, sort=TRUE)
+keep <- c("Rainbow Lorikeet", "Galah", "Dusky Moorhen", "Umbrella tree", "Spotted Pardalote")
+monash_ala <- monash %>% filter(`Vernacular name` %in% keep) %>%
+  select(`Vernacular name`, Longitude, Latitude) %>%
+  rename(name=`Vernacular name`)
+save(monash_ala, file="monash/monash_ala.rda")
+```
+
+```{r}
+library(tidyverse)
+library(ggmap)
+load("monash/monash_map.rda")
+load("monash/monash_ala.rda")
+ggmap(map) + 
+  geom_point(data=monash_ala, aes(x=Longitude, y=Latitude, colour=name, shape=name), size=2, alpha=0.7) +
+  scale_colour_brewer(palette="Dark2")
+```
+
+### Generate training and test sets
+
+Using the `tidymodels` approach, break the data into a training and testing set. Use 50% because kaggle will further break the data.
+
+```{r echo=TRUE}
+library(tidymodels)
+set.seed(444)
+data_split <- initial_split(monash_ala, prop = 1/2)
+monash_ala_tr <- training(data_split)
+monash_ala_ts <- testing(data_split)
+```
+
+### Checks
+
+Check that it properly stratified the classes.
+
+```{r echo=TRUE, eval=FALSE}
+monash_ala %>% count(name)
+monash_ala_tr %>% count(name)
+monash_ala_ts %>% count(name)
+```
+
+Check that the order of classes is a bit mixed
+
+```{r echo=TRUE, eval=FALSE}
+monash_ala_tr$name
+monash_ala_tr$name
+```
+
+### Create unlabelled test set, solution and example solution data sets
+
+Add an id column, so that when labels are removed, observations can be matched back to original set, or matched against solution set. Also the latest version of kaggle-in-class requires the important columns be named `Id` and `Category`. 
+
+```{r echo=TRUE}
+monash_ala_ts <- monash_ala_ts %>% 
+  mutate(Id = 1:n()) %>%
+  rename(Category = name) %>%
+  select(Id, Category, Longitude, Latitude)
+monash_ala_tr <- monash_ala_tr %>%
+  rename(Category = name)
+```
+
+
+Need to provide an unlabelled test set for competitors. Save the full test set into a new file, clearly labelled and remove the labels in the test object. 
+
+```{r echo=TRUE}
+monash_ala_ts_labelled <- monash_ala_ts
+monash_ala_ts <- monash_ala_ts %>% 
+  mutate(Category = NA)
+monash_ala_ts %>% print(n=5)
+```
+
+Create a solution set, and a sandbox (sample solution) set. 
+
+```{r echo=TRUE}
+monash_ala_solution <- monash_ala_ts_labelled %>%
+  select(Id, Category)
+monash_ala_example_solution <- monash_ala_solution %>%
+  mutate(Category = sample(Category))
+```
+
+Write to files for kaggle upload.
+
+```{r echo=TRUE}
+write_csv(monash_ala_tr, path="kaggle_files/monash_ala_tr.csv")
+write_csv(monash_ala_ts, path="kaggle_files/monash_ala_ts.csv")
+write_csv(monash_ala_solution, path="kaggle_files/monash_ala_solution.csv")
+write_csv(monash_ala_example_solution, path="kaggle_files/monash_ala_example_solution.csv")
+```
+
+## Check modeling
+
+Its a good idea to provide a basic model as a helper for students to get started.
+
+```{r eval=FALSE}
+ct_spec <- decision_tree() %>% 
+  set_engine("rpart") %>% 
+  set_mode("classification")
+monash_ala_rec <- recipe(Category~., data=monash_ala_tr)
+monash_ala_fit <- 
+  workflow() %>% 
+  add_model(ct_spec) %>% 
+  add_recipe(monash_ala_rec) %>%
+  fit(data=monash_ala_tr)
+```
+
+```{r echo=TRUE}
+library(rpart)
+monash_ala_rp <- rpart(Category~., data=monash_ala_tr,
+              control = rpart.control(cp = 0.0005, minsplit = 5)) 
+# monash_ala_rp
+
+monash_ala_ts_pred <- predict(monash_ala_rp, monash_ala_ts, type="class")
+table( monash_ala_ts_labelled$Category, monash_ala_ts_pred)
+```
+
+### Provide guidelines to students
+
+For the pictionary challenge, [these](https://iml.numbat.space/project/project.html) were the instructions.
+
+## Uploading to kaggle
+
+### Finding the kaggle-in-class 
+
+- Go to the main kaggle host a competition site: https://www.kaggle.com/c/about/host/
+- Look for link `Interested in hosting a classroom competition? Visit Kaggle InClass »`
+- This takes you to page on help and to create a competition: https://www.kaggle.com/c/about/inclass
+
+### Create a competition
+
+1. Click `Create competition` link
+2. Give a short name and description
+3. Fill in overview
+
+### Competition details
+
+4. Choose evaluation metric
+5. Provide information on submission file format
+6. Upload data
+7. Add descriptions of the data
+8. Set the rules
+9. Set deadlines - careful with dates and times
+10. Teams or no teams, number of submissions per day allowed
+
+### Styling
+
+11. Add images
+
+### Access
+
+12. Limit to monash email address? Or to anyone with link?
+
+### Add solution set
+
+13. Upload solution file
+14. Set public/private split
+15. Upload sample submission file
+
+### Try it out
+
+15. Sandbox solutions
+
+### Go live
+
+16. Launch checklist
+17. Launch competition now
+
+### Test it out!
+
+This is your turn!
+
+- Download the training data and test data. 
+- Make a prediction of the test set.
+- Upload your submission. 
+
+## Resources
+
+- Kaggle site instructions: https://www.kaggle.com/about/inclass/overview
+- Julia Polak's video instructions: 

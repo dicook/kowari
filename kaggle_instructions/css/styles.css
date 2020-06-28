@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css?family=Pangolin:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Roboto+Mono|Roboto+Slab&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Caveat:300,300i,400,400i,700,700i&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&display=swap');
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Pangolin', sans-serif;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+code {
+  font-family: 'Fira Code', monospace;
+}
+
+blockquote {
+  font-family: 'Caveat', monospace;
+}
+
+.navbar-default,
+.navbar-toggle, 
+.navbar-toggle:focus {
+  background-color: #006DAE;
+}
+
+.navbar-nav > .active > a,
+.navbar-toggle:hover,
+.navbar-nav>li>a:hover {
+  background-color: #027EB6!important;
+}
+
+
+#sticky-footer {
+  background-color: #006DAE;
+  color: white;
+  padding: 10px;
+  position: sticky;
+  bottom: 0; 
+}
+
+.d-none {
+  display: none!important;
+}
+
+@media print { 
+   .navbar {
+        display: block;
+        position: absolute;
+        top:0;
+        border-width:0 !important;
+        min-height: 0!important;
+        border-bottom: 1px solid black!important;
+    }
+    .navbar-toggle {
+        display:none;
+    }
+    /* to remove the href printing */
+    a[href]:after {
+      content: none !important;
+    }
+    
+    #sticky-footer {
+      display: none !important;
+    }
+    
+    .d-print-block {
+      display: block!important;
+    }
+}
+
+.tutorialTitle:before {
+  content: url("../images/kowari-logo.jpg");
+  display: block;
+}
+
+/*-----------TABLE OF CONTENTS-------------*/
+
+/* kowari LOGO */
+#TOC::before {
+  content: "";
+  display: block; /*change from block to none for landing page */
+  height: 150px;
+  margin: 10px 10px 40px 10px;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/a/ac/Vakorejsek_ctyrprsty.jpg");
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+div.tocify {
+    width: 100% !important;
+    max-width: 260px;
+    max-height: 85%;
+    font-size: 16px;
+}
+
+.tocify {
+  border: none;
+  position: -webkit-sticky;
+  position: sticky; 
+  top: 60px; 
+  width: 100%;
+}
+
+#TOC {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  margin-left: auto !important;
+  margin-right: auto !important; /* to center the TOC within it's col-xs-12, etc. container */
+}
+
+.toc-content { /*actually, the body content*/
+  width: 65%
+}
+
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: white;
+    border: none;
+    color: gray;
+}
+
+.list-group-item:hover {
+    z-index: 2;
+    color: DarkSlateGray;
+    background-color: white;
+    border: none;
+}
+
+.list-group-item.active{
+    z-index: 2;
+    color: black;
+    background-color: white;
+    border: none;
+}
+
+.list-group-item.active:focus {
+    z-index: 2;
+    color: black;
+    background-color: white;
+    border: none;
+}
+
+.list-group-item.active:hover {
+  z-index: 2;
+  color: DarkSlateGray;
+  background-color: white;
+  border: none;
+}
