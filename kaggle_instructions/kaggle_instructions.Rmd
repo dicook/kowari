@@ -156,12 +156,27 @@ monash_ala_fit <-
 
 ```{r echo=TRUE}
 library(rpart)
+library(gt)
 monash_ala_rp <- rpart(Category~., data=monash_ala_tr,
               control = rpart.control(cp = 0.0005, minsplit = 5)) 
 # monash_ala_rp
 
-monash_ala_ts_pred <- predict(monash_ala_rp, monash_ala_ts, type="class")
-table( monash_ala_ts_labelled$Category, monash_ala_ts_pred)
+monash_ala_ts_pred <- monash_ala_ts_labelled %>% 
+  mutate(pred = predict(monash_ala_rp, monash_ala_ts, type="class"))
+
+monash_ala_ts_pred %>% 
+  count(Category, pred) %>%
+  pivot_wider(names_from = pred, values_from = n, values_fill=0) %>% 
+  gt()
+```
+```{r}
+grid <- expand.grid(Longitude=seq(145.125, 145.1426, 0.00001),
+                    Latitude=seq(-37.91749, -37.90448, 0.0001))
+grid <- grid %>% 
+  mutate(pred = predict(monash_ala_rp, grid, type="class"))
+ggmap(map) + 
+  geom_point(data=grid, aes(x=Longitude, y=Latitude, colour=pred), size=2, alpha=0.7) +
+  scale_colour_brewer(palette="Dark2")
 ```
 
 ### Provide guidelines to students
