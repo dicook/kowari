@@ -3,7 +3,7 @@ title: "Creating a kaggle-in-class challenge"
 author: "Di Cook, Monash EBS"
 output: 
     learnr::tutorial:
-        progressive: true
+        progressive: false
         allow_skip: true
         css: "css/styles.css"
 runtime: shiny_prerendered
@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE, 
   warning = FALSE,
-  error = FALSE)
+  error = FALSE, 
+  fig.retina = 3)
 ```
 
 Image: [kowari](https://upload.wikimedia.org/wikipedia/commons/a/ac/Vakorejsek_ctyrprsty.jpg)
@@ -193,44 +194,110 @@ For the pictionary challenge, [these](https://iml.numbat.space/project/project.h
 
 ### Create a competition
 
-1. Click `Create competition` link
-2. Give a short name and description
-3. Fill in overview
+- Click `Create competition` link
 
-### Competition details
+![](images/1.create.png)
 
-4. Choose evaluation metric
-5. Provide information on submission file format
-6. Upload data
-7. Add descriptions of the data
-8. Set the rules
-9. Set deadlines - careful with dates and times
-10. Teams or no teams, number of submissions per day allowed
+- Give a short name and description
 
-### Styling
+![](images/2.name.png)
 
-11. Add images
+- Fill in overview
 
-### Access
+![](images/3.description.png)
 
-12. Limit to monash email address? Or to anyone with link?
+## Competition details
 
-### Add solution set
+### Upload data
 
-13. Upload solution file
-14. Set public/private split
-15. Upload sample submission file
+- Need to upload training, test, sample solution
 
-### Try it out
+![](images/4.data_before.png)
+- Successful uploads
+    
+![](images/5.data_success.png)
+- Need to agree to the rules
 
-15. Sandbox solutions
+![](images/6.data_agree.png)
+- Add a description of your data
 
-### Go live
+![](images/7.data_description.png)
 
-16. Launch checklist
-17. Launch competition now
+## Styling
 
-### Test it out!
+Style your page, add some nice images (make sure you own them, or proper sharing license)
+
+![](images/8.style.png)
+
+## Managing access
+
+Select access: recommend limited access only to people who have the link
+
+![](images/9.privacy.png)
+
+## Choose evaluation metric
+
+The metric you choose changes the format required for the solution file. If you have a balanced class problem, CategorizationAccuracy is simple and easy.
+
+![](images/10.metric.png)
+
+## Add solution set
+
+### Upload solution file
+
+![](images/11.solution.png)
+
+### Set public/private split
+
+Generally a value of 50% is good, it means that 50% of the test set will be held out and only revealed once the competition is finished.
+
+### Upload sample submission file
+
+You should upload your example solution set here, too. It will automatically be compared with the solution set, and is a check that this format will work for participant submissions. 
+
+![](images/12.example.png)
+
+### Sandbox shows if example works
+
+![](images/13.sandbox.png)
+
+## Fill in some more text boxes
+
+### Provide information on submission file format and variables
+
+The Data tab has a text box where you explain the variables in the data, and any other details that you'd like to provide about the data.
+
+### Evaluation explanation
+
+The Evaluation tab has a box requiring you to explain how the evaluation is done.
+
+## Final settings
+
+![](images/14.settings.png)
+
+### Set the due date
+
+Note that the date time is UTC time, so you need to [convert to local time](https://www.worldtimebuddy.com/utc-to-australia-melbourne)
+
+### Turn off teams
+
+Its better to get individual submissions. Asking the students to make a username that consists of their monash username and a team name is a good idea for recognising the participants and which team they are on. 
+
+Scores are assigned for a team, at the end of the competition by choosing the best result of team members.
+
+### One submission per day
+
+Setting a limit on the number of submissions per day helps the students manage their time, not get too involved in the task. And also gives them time to think about the model development.
+
+## Go live
+
+### Launch checklist
+
+![](images/15.checklist.png)
+
+### Launch competition now
+
+## Test it out!
 
 This is your turn!
 
@@ -241,4 +308,4 @@ This is your turn!
 ## Resources
 
 - Kaggle site instructions: https://www.kaggle.com/about/inclass/overview
-- Julia Polak's video instructions: 
+- Julia Polak's video instructions:  https://www.youtube.com/watch?v=tqbps4vq2Mc&t=32s
