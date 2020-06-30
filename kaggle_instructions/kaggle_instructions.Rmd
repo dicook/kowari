@@ -307,5 +307,6 @@ This is your turn!
 
 ## Resources
 
-- Kaggle site instructions: https://www.kaggle.com/about/inclass/overview
-- Julia Polak's video instructions:  https://www.youtube.com/watch?v=tqbps4vq2Mc&t=32s
+- [Kaggle site instructions](https://www.kaggle.com/about/inclass/overview)
+- [Julia Polak's video instructions](https://www.youtube.com/watch?v=tqbps4vq2Mc&t=32s)
+- [Github repo with this tutorial files](https://github.com/dicook/kowari)
